@@ -26,7 +26,7 @@ This project uses a **free ReqRes API key** for testing.
 
 ```json
 {
-  "REQRES_API_KEY": "reqres_0414e572c1c844d282a63bd9570200f1"
+  "REQRES_API_KEY": "reqres_c225726527424dcf9feb7eeef504adae"
 }
 ```
 
