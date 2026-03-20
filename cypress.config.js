@@ -22,7 +22,8 @@ module.exports = defineConfig({
     env: {
       REQRES_API_KEY:
         process.env.CYPRESS_REQRES_API_KEY ||
-        'reqres_ff4c66c4907f4df1ae03a0d8945faeec',
+        'reqres_c225726527424dcf9feb7eeef504adae',
+      
     },
   },
 })
