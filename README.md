@@ -23,7 +23,7 @@ This project uses a **free ReqRes API key** for testing.
 
 * Default key is already configured in the project.
 * You may override it using environment variables:
-
+*** This is my free generated API key from my personal test account**
 ```json
 {
   "REQRES_API_KEY": "reqres_c225726527424dcf9feb7eeef504adae"
