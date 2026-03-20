@@ -1,6 +1,6 @@
 # ReqRes API — Cypress + Cucumber (JavaScript)
 
-API contract checks against [ReqRes API docs](https://reqres.in/api-docs) and [OpenAPI](https://reqres.in/openapi.json), using [Cypress](https://docs.cypress.io/) and [Gherkin](https://cucumber.io/docs/gherkin/reference/) via [@badeball/cypress-cucumber-preprocessor](https://github.com/badeball/cypress-cucumber-preprocessor).
+API contract checks against ReqRes API docs and OpenAPI, using Cypress and Gherkin via @badeball/cypress-cucumber-preprocessor.
 
 ## Setup
 
@@ -9,67 +9,99 @@ npm install
 npx cypress install
 ```
 
-The `cypress` CLI is not on your shell `PATH` unless you install it globally. Use **`npx cypress install`** (not bare `cypress install`) so npm downloads the Cypress app into `~/Library/Caches/Cypress/<version>/` on macOS.
+> Note: The `cypress` CLI is not on your shell `PATH` unless installed globally. Always use `npx cypress install` to ensure Cypress is properly downloaded.
+
+---
 
 ## Configuration
 
-- **Base URL:** `https://reqres.in` (see `cypress.config.js`).
-- **API keys (live):** See `cypress/support/api-defaults.js`. **`REQRES_API_KEY`** (env: `CYPRESS_REQRES_API_KEY`, default in `cypress.config.js`) is merged on typical **`cy.request`** calls. **`REQRES_MANAGE_API_KEY`** (`CYPRESS_REQRES_MANAGE_API_KEY`) is used for **`apiKeyHeaders()`** steps — collections, **`/api/app-users`**, custom paths, etc. If `REQRES_MANAGE_API_KEY` is unset, those steps fall back to **`REQRES_API_KEY`**.
+* **Base URL:** `https://reqres.in` (see `cypress.config.js`).
 
-Copy `cypress.env.example` → `cypress.env.json` (gitignored) and set your **Owner manage key** for live app-user tests:
+### API Key (Free Tier)
+
+This project uses a **free ReqRes API key** for testing.
+
+* Default key is already configured in the project.
+* You may override it using environment variables:
 
 ```json
 {
   "REQRES_API_KEY": "reqres_0414e572c1c844d282a63bd9570200f1"
 }
+```
 
+> ⚠️ **Important Limitation**
+> The free API key is limited to **150 requests per day**.
+>
+> * If you exceed this limit, API requests will start failing.
+> * The limit resets after **24 hours**.
+> * If tests suddenly fail, this is the most likely reason.
 
-## Run
+---
 
-<h1 style="font-size: 3em;">RUN NPM TEST to run the test</h1>
+## Run Tests
 
-> [!WARNING]
-> This API key is limited to **150 requests per day**.
-> If tests fail due to hitting the limit, you must wait **24 hours** before running live tests again.
-
-Against **live** `https://reqres.in`:
+After completing setup (`npm install` and `npx cypress install`), run:
 
 ```bash
 npm test
-# or
+```
+
+or
+
+```bash
+npx cypress run
+```
+
+To open Cypress UI:
+
+```bash
 npx cypress open
 ```
 
-Against a **local stub** (stable; no CDN). Same specs, `baseUrl` = `http://127.0.0.1:4050`:
+---
+
+## Troubleshooting
+
+If you see:
+
+* “No version of Cypress is installed”
+* “Cypress executable not found”
+
+Run:
 
 ```bash
-npm run test:stub
-# or UI:
-npm run cypress:open:stub
+npx cypress install
 ```
 
-Stub handlers live in `scripts/reqres-stub-server.js`.
+---
 
-If you see **“No version of Cypress is installed”** / **“Cypress executable not found”**, run `npx cypress install` again from this folder (after `npm install`).
+## Project Structure
 
-### Cloudflare / HTML instead of JSON
+| Feature file                             | API area                                                      |
+| ---------------------------------------- | ------------------------------------------------------------- |
+| `cypress/e2e/legacy-users.feature`       | `/api/users` (legacy)                                         |
+| `cypress/e2e/legacy-unknown.feature`     | `/api/unknown` (legacy)                                       |
+| `cypress/e2e/users.feature`              | `GET /api/users`                                              |
+| `cypress/e2e/authentication.feature`     | `/api/register`, `/api/login`, `/api/logout`, `/api/redirect` |
+| `cypress/e2e/collections.feature`        | `/api/collections`                                            |
+| `cypress/e2e/app-users.feature`          | `/api/app-users`, sessions                                    |
+| `cypress/e2e/app-session-routes.feature` | `/app/me`, `/app/collections`                                 |
+| `cypress/e2e/custom-endpoints.feature`   | `/api/custom/{path}`                                          |
+| `cypress/e2e/templates.feature`          | `/templates`                                                  |
+| `cypress/e2e/onboarding.feature`         | `/api/onboarding/*`                                           |
+| `cypress/e2e/figma.feature`              | `/api/figma/*`                                                |
 
-`cy.request` runs from Node. ReqRes sits behind Cloudflare; you may see **403** or **HTML** (“Just a moment…”, marketing pages) instead of API JSON. All API steps merge **`Accept: application/json`**, a **desktop Chrome `User-Agent`**, and optional **`x-api-key`** (`cypress/support/api-defaults.js`). If many specs fail live, try **`npm run test:stub`** or another network.
+Shared step definitions are located in:
 
-## Layout
+```
+cypress/e2e/step-definitions/
+```
 
-| Feature file | API area |
-|--------------|----------|
-| `cypress/e2e/legacy-users.feature` | `/api/users` (legacy) |
-| `cypress/e2e/legacy-unknown.feature` | `/api/unknown` (legacy) |
-| `cypress/e2e/users.feature` | `GET /api/users` |
-| `cypress/e2e/authentication.feature` | `/api/register`, `/api/login`, `/api/logout`, `/api/redirect` |
-| `cypress/e2e/collections.feature` | `/api/collections` (+ project app-users helpers) |
-| `cypress/e2e/app-users.feature` | `/api/app-users`, sessions |
-| `cypress/e2e/app-session-routes.feature` | `/app/me`, `/app/collections` |
-| `cypress/e2e/custom-endpoints.feature` | `/api/custom/{path}` |
-| `cypress/e2e/templates.feature` | `/templates` |
-| `cypress/e2e/onboarding.feature` | `/api/onboarding/*` |
-| `cypress/e2e/figma.feature` | `/api/figma/*` |
+---
 
-Shared steps live under `cypress/e2e/step-definitions/`.
+## Notes
+
+* Tests are written using **Gherkin (BDD)** format.
+* Focus is on **API contract validation**, **status codes**, and **response structure**.
+* Designed to be **readable, maintainable, and scalable**.
