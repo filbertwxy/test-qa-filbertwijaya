@@ -20,14 +20,9 @@ Copy `cypress.env.example` → `cypress.env.json` (gitignored) and set your **Ow
 
 ```json
 {
-  "REQRES_API_KEY": "reqres_0414e572c1c844d282a63bd9570200f1",
-  "REQRES_MANAGE_API_KEY": "your_owner_manage_key_from_app_reqres_in"
+  "REQRES_API_KEY": "reqres_0414e572c1c844d282a63bd9570200f1"
 }
-```
 
-Or export: `CYPRESS_REQRES_MANAGE_API_KEY=…` before `npm test`.
-
-**Why two keys?** Live **`GET /api/app-users`** can return **403** `manage_key_required` with the public demo key only. ReqRes may require an **Owner manage key** for app-user admin ([API keys / get started](https://app.reqres.in/api-keys)). Easiest live setup: put **only** your manage key in **`REQRES_API_KEY`** and leave **`REQRES_MANAGE_API_KEY`** empty (everything uses one key).
 
 ## Run
 
